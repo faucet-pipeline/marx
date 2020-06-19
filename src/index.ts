@@ -5,9 +5,9 @@ export interface ResolveOptions {
     enforceRelative?: boolean;
 }
 
-function abort(msg: string, code = 1): never {
+function abort(msg: string): never {
     console.error(msg);
-    process.exit(code);
+    process.exit(1);
 }
 
 function repr(value: unknown, jsonify = true): string {
@@ -66,7 +66,7 @@ export default class Manifest {
         if (key === "short")
             this.keyTransform = (fp, targetDir) => {
                 if (!targetDir)
-                    abort("Stop it, bad Robert");
+                    abort("ERROR: `short` requires a `targetDir`");
                 return path.relative(targetDir, fp);
             }
         else
