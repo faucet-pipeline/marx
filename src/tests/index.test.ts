@@ -1,5 +1,5 @@
 import path from "path";
-import Manifest from "..";
+import {Manifest} from "..";
 
 describe("manifest", () => {
     it("maps original to actual file names with deterministic serialization", async () => {

@@ -45,7 +45,7 @@ export interface ManifestOptions {
     webRoot?: string;
 }
 
-export default class Manifest {
+export class Manifest {
 
     public readonly webRoot: string;
     public readonly filepath?: string;
