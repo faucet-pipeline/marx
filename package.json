@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "Web manifests",
   "main": "dist/index.js",
+  "module": "dist/index.es.js",
   "scripts": {
     "build": "rm -rf tsconfig.tsbuildinfo dist && tsc --emitDeclarationOnly && rollup -c",
     "test": "jest"
