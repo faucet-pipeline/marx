@@ -45,6 +45,11 @@ export interface ManifestOptions {
     webRoot?: string;
 }
 
+export interface ManifestData {
+    uri: string;
+    meta: Record<string, any>;
+}
+
 export class Manifest {
 
     public readonly webRoot: string;
@@ -52,7 +57,7 @@ export class Manifest {
     public readonly keyTransform: KeyTransform;
     public readonly valueTransform: ValueTransform;
 
-    private readonly _index = new Map<string, string>();
+    private readonly _index = new Map<string, ManifestData>();
 
     constructor(referenceDir: string, { target, key, value, baseURI, webRoot }: ManifestOptions = {}) {
         if (value && (baseURI || webRoot))
@@ -82,13 +87,23 @@ export class Manifest {
     }
 
     get(originalPath: string): string | undefined {
-        return this._index.get(originalPath);
+        const entry = this._index.get(originalPath);
+        if (entry)
+            return entry.uri;
+        return undefined;
+    }
+
+    meta(originalPath: string): Record<string, any> | undefined {
+        const entry = this._index.get(originalPath);
+        if (entry)
+            return entry.meta;
+        return undefined;
     }
 
     set(originalPath: string, actualPath: string, targetDir?: string): Promise<void> {
         let key = this.keyTransform(originalPath, targetDir);
         let uri = this.valueTransform(actualPath);
-        this._index.set(key, uri);
+        this._index.set(key, { uri: uri, meta: {} });
 
         let fp = this.filepath;
         return fp ? fs.writeFile(fp, JSON.stringify(this) + "\n") : Promise.resolve();
@@ -97,7 +112,7 @@ export class Manifest {
     toJSON(): any {
         let index = this._index;
         return Array.from(index.keys()).sort().reduce((memo: Record<string, string>, key) => {
-            memo[key] = index.get(key)!;
+            memo[key] = index.get(key)!.uri;
             return memo;
         }, {});
     }
